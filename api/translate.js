@@ -56,6 +56,6 @@ export default async function handler(req, res) {
     res.status(200).json({ translatedDoc });
   } catch (error) {
     console.error("Error translating document:", error);
-    res.status(500).send("Error translating document: " + error.message);
+    res.status(500).json({ error: error.message }); 
   }
 }

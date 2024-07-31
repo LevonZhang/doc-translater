@@ -38,6 +38,9 @@
       <h2>翻译完成！</h2>
       <a :href="translatedDoc" download="translated.docx" class="download-btn">下载翻译结果</a>
     </div>
+    <div v-if="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
   </div>
 </template>
 
@@ -54,6 +57,7 @@ export default {
       progress: 0,
       translatedDoc: null,
       isDragging: false, 
+      errorMessage: null, // 用于存储错误信息
     };
   },
   methods: {
@@ -82,8 +86,12 @@ export default {
 
         this.translatedDoc = response.data.translatedDoc;
       } catch (error) {
-        console.error("Error translating document:", error);
-        // 处理错误，例如显示错误信息
+        // 检查是否为API返回的错误
+        if (error.response && error.response.data && error.response.data.error) {
+          this.errorMessage = error.response.data.error;
+        } else {
+          this.errorMessage = '翻译过程中出现错误。';
+        }
       } finally {
         this.isTranslating = false;
       }
@@ -221,5 +229,14 @@ export default {
 
 .download-btn:hover {
   background-color: #2980b9;
+}
+
+.error-message {
+  background-color: #fdd;
+  border: 1px solid #faa;
+  color: #a00;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
 }
 </style>
