@@ -78,7 +78,11 @@ export default {
       formData.append('bilingual', this.bilingual);
 
       try {
-        const response = await axios.post('/api/translate', formData, {
+        const response = await axios.post('/api/translate', formData,
+        headers: {
+            // 'Content-Type': 'multipart/form-data'  // 不要设置 Content-Type 
+        },
+        {
           onUploadProgress: (progressEvent) => {
             this.progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           },
