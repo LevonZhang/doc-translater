@@ -2,6 +2,7 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const docx4js = require("docx4js");
 const multer = require('multer'); // 引入 multer 中间件
+const fs = require('fs'); // 引入 fs 模块
 const upload = multer({ dest: '/tmp/' }); // 设置临时文件存储路径
 
 export default async function handler(req, res) {
@@ -18,14 +19,17 @@ export default async function handler(req, res) {
         // 初始化 Google Gemini API 客户端
         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
-        // 使用 docx4js 读取 Word 文档
-        const doc = await docx4js.load(file);
+        // 读取文件内容
+        const fileContent = fs.readFileSync(file.path);
+
+        // 使用 docx4js 加载 Word 文档数据
+        const doc = await docx4js.parseAsync(fileContent); 
 
         // 提取待翻译的文本内容
         let textToTranslate = "";
         const paragraphs = doc.querySelectorAll("w\\:p");
         paragraphs.forEach((p) => {
-        textToTranslate += p.textContent + "\n";
+            textToTranslate += p.textContent + "\n";
         });
 
         // 调用 Google Gemini API 进行翻译
